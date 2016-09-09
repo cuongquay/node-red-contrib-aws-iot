@@ -106,6 +106,7 @@ module.exports = function(RED) {
 		}
 	}
 
+
 	RED.nodes.registerType("aws-mqtt in", awsMqttNodeIn);
 
 	function awsMqttNodeOut(n) {
@@ -148,57 +149,60 @@ module.exports = function(RED) {
 
 		if (this.awsIot) {
 			var self = this;
-			this.awsIot.connect(msg.clientId);
-			this.awsIot.listen(self);
-			self.log('Register: ' + this.awsIot.name + ", " + n.method);
-			this.awsIot.device.register(this.awsIot.name, {
-				ignoreDeltas : true,
-				persistentSubscribe : true
-			});
 			self.on("input", function(msg) {
-				if (n.method == 'get')
-					self.clientToken = this.awsIot.device[n.method](this.awsIot.name);
-				else
-					self.clientToken = this.awsIot.device[n.method](this.awsIot.name, msg.payload);
-			});
-			this.awsIot.device.on('message', function(topic, payload) {
-				self.log('onMessage: ' + topic + ", " + payload.toString());
-				self.send({
-					type : 'message',
-					topic : topic,
-					payload : JSON.parse(payload.toString())
+				this.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
+					if (event == "ready" || event == "connected") {
+						this.awsIot.device.register(this.awsIot.name, {
+							ignoreDeltas : true,
+							persistentSubscribe : true
+						});
+						if (n.method == 'get')
+							self.clientToken = this.awsIot.device[n.method](this.awsIot.name);
+						else
+							self.clientToken = this.awsIot.device[n.method](this.awsIot.name, msg.payload);
+						this.awsIot.device.on('message', function(topic, payload) {
+							self.log('onMessage: ' + topic + ", " + payload.toString());
+							self.send({
+								type : 'message',
+								topic : topic,
+								payload : JSON.parse(payload.toString())
+							});
+						});
+						this.awsIot.device.on('delta', function(thingName, stateObject) {
+							self.log('onDelta ' + thingName + ': ' + JSON.stringify(stateObject));
+							self.send({
+								type : 'delta',
+								name : thingName,
+								payload : stateObject
+							});
+						});
+						this.awsIot.device.on('status', function(thingName, status, clientToken, stateObject) {
+							if (self.clientToken == clientToken) {
+								self.log('onStatus: ' + thingName + ", clientToken: " + self.clientToken);
+								self.send({
+									type : 'status',
+									name : thingName,
+									token : clientToken,
+									payload : {
+										status : status,
+										stateObject : stateObject,
+									}
+								});
+							}
+						});
+						this.awsIot.device.on('timeout', function(thingName, clientToken) {
+							if (self.clientToken == clientToken) {
+								self.send({
+									type : 'timeout',
+									name : thingName,
+									token : clientToken,
+									payload : {
+									}
+								});
+							}
+						});
+					}
 				});
-			});
-			this.awsIot.device.on('delta', function(thingName, stateObject) {
-				self.log('onDelta ' + thingName + ': ' + JSON.stringify(stateObject));
-				self.send({
-					type : 'delta',
-					name : thingName,
-					payload : stateObject
-				});
-			});
-			this.awsIot.device.on('status', function(thingName, status, clientToken, stateObject) {
-				if (self.clientToken == clientToken) {
-					self.log('onStatus: ' + thingName + ", clientToken: " + self.clientToken);
-					self.send([{
-						name : thingName,
-						token : clientToken,
-						payload : {
-							status : status,
-							stateObject : stateObject,
-						}
-					}, null]);
-				}
-			});
-			this.awsIot.device.on('timeout', function(thingName, clientToken) {
-				if (self.clientToken == clientToken) {
-					self.send([null, {
-						name : thingName,
-						token : clientToken,
-						payload : {
-						}
-					}]);
-				}
 			});
 		} else {
 			this.error("aws-thing shadow is not configured");
