@@ -29,11 +29,7 @@ limitations under the License.
 	<div class="form-row">
 	<label for="node-config-input-clientId"><i class="fa fa-tag"></i> Client ID</label>
 	<input type="text" id="node-config-input-clientId" placeholder="Client ID">
-	</div>
-	<div class="form-row">
-	<label for="node-config-input-certId"><i class="fa fa-tag"></i> Certificate</label>
-	<select type="text" id="node-config-input-certId"></select>
-	</div>
+	</div>	
 	<div class="form-row">
 	<label for="node-config-input-region"><i class="fa fa-tag"></i> Region</label>
 	<select type="text" id="node-config-input-region">
@@ -61,10 +57,6 @@ limitations under the License.
 				value : "",
 				required : true
 			},
-			certId : {
-				value : "",
-				required : true
-			},
 			region : {
 				value : "",
 				required : true
@@ -72,30 +64,6 @@ limitations under the License.
 		},
 		label : function() {
 			return this.name;
-		},
-		oneditprepare : function() {
-			var that = this;
-			function fulfillOptions(certs) {
-				$("#node-config-input-certId").empty();
-				$.each(certs, function(index, value) {
-					if (value != "") {
-						if (that.certId == value) {
-							$("#node-config-input-certId").append('<option value="' + value + '" selected>' + value + '</option>');
-						} else {
-							$("#node-config-input-certId").append('<option value="' + value + '">' + value + '</option>');
-						}
-					}
-				});
-				$("#node-config-input-certId").change();
-			}
-
-
-			$.get("/aws/certs", function(certs) {
-				fulfillOptions(certs);
-			}).fail(function() {
-				var certs = ["e51610d943", "649ca31808"];
-				fulfillOptions(certs);
-			});
 		}
 	}); 
 </script>
