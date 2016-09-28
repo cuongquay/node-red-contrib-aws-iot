@@ -118,7 +118,7 @@ module.exports = function(RED) {
 			var self = this;
 			var options = {
 				qos : n.qos || 0,
-				retain : n.retain || false
+				retain : false
 			};
 			self.on("input", function(msg) {
 				this.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
