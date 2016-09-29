@@ -134,7 +134,7 @@ module.exports = function(RED) {
 								msg.payload = "" + msg.payload;
 							}
 						}
-						this.awsIot.device.publish(msg.topic, msg.payload, options);
+						this.awsIot.device.publish(msg.topic || n.topic, msg.payload, options);
 					}
 				});
 			});
@@ -142,7 +142,6 @@ module.exports = function(RED) {
 			this.error("aws-mqtt out is not configured");
 		}
 	}
-
 
 	RED.nodes.registerType("aws-mqtt out", awsMqttNodeOut);
 
