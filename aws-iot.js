@@ -23,21 +23,22 @@ module.exports = function(RED) {
 
 		this.connect = function(clientId, reconnect, callback) {
 			clientId = clientId || n.clientId;
+			var awsCerts = n.awscerts || ".";
 			if (!self.device || reconnect) {
 				self.log("Attemp to connect to " + n.mode + " with " + clientId);
 				if (n.mode == "shadow") {
 					self.device = require('aws-iot-device-sdk').thingShadow({
-						keyPath : n.awscerts + '/' + clientId + '-private.pem.key',
-						certPath : n.awscerts + '/' + clientId + '-certificate.pem.crt',
-						caPath : n.awscerts + '/root-CA.crt',
+						keyPath : awsCerts + '/' + clientId + '-private.pem.key',
+						certPath : awsCerts + '/' + clientId + '-certificate.pem.crt',
+						caPath : awsCerts + '/root-CA.crt',
 						clientId : clientId,
 						region : n.region
 					});
 				} else {
 					self.device = require('aws-iot-device-sdk').device({
-						keyPath : n.awscerts + '/' + clientId + '-private.pem.key',
-						certPath : n.awscerts + '/' + clientId + '-certificate.pem.crt',
-						caPath : n.awscerts + '/root-CA.crt',
+						keyPath : awsCerts + '/' + clientId + '-private.pem.key',
+						certPath : awsCerts + '/' + clientId + '-certificate.pem.crt',
+						caPath : awsCerts + '/root-CA.crt',
 						clientId : clientId,
 						region : n.region
 					});
@@ -63,12 +64,15 @@ module.exports = function(RED) {
 
 		self.on('close', function() {
 			self.log("closed " + n.name + " ok");
-			if (n.mode == "shadow") {
-				self.device.unregister(self.name);
-				self.device.end();
-			} else {
-				self.device.end();
+			if (self.device) {
+				if (n.mode == "shadow") {
+					self.device.unregister(self.name);
+					self.device.end();
+				} else {
+					self.device.end();
+				}
 			}
+
 		});
 	}
 
@@ -211,4 +215,4 @@ module.exports = function(RED) {
 
 
 	RED.nodes.registerType("aws-thing", awsThingShadowNodeFunc);
-};
+}; 

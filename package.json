@@ -3,7 +3,7 @@
     "version"       : "0.0.9",
     "description"   : "An aws-iot-hub node for Node-RED",
     "dependencies"  : {
-        "aws-iot-device-sdk" : ">=1.0.7"
+        "aws-iot-device-sdk" : ">=1.0.12"
     },
     "repository" : {
         "type":"git",
