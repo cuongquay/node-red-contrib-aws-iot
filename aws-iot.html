@@ -29,7 +29,7 @@ limitations under the License.
 	<div class="form-row">
 	<label for="node-config-input-clientId"><i class="fa fa-tag"></i> Client ID</label>
 	<input type="text" id="node-config-input-clientId" placeholder="Client ID">
-	</div>	
+	</div>
 	<div class="form-row">
 	<label for="node-config-input-region"><i class="fa fa-tag"></i> Region</label>
 	<select type="text" id="node-config-input-region">
@@ -37,10 +37,10 @@ limitations under the License.
 	<option value="eu-west-1">eu-west-1</option>
 	</select>
 	</div>
-        <div class="form-row">
-        <label for="node-config-input-awscerts"><i class="fa fa-tag"></i> AWS Certificate Directory</label>
-        <input type="text" id="node-config-input-awscerts">/root/.certs</input>
-        </div>
+	<div class="form-row">
+	<label for="node-config-input-awscerts"><i class="fa fa-tag"></i> AWS Certificate Directory</label>
+	<input type="text" id="node-config-input-awscerts">/root/.certs</input>
+	</div>
 </script>
 
 <!-- MQTT Broker Configuration -->
@@ -64,11 +64,11 @@ limitations under the License.
 			region : {
 				value : "",
 				required : true
+			},
+			awscerts : {
+				value : "/root/.certs",
+				required : true
 			}
-                        awscerts : {
-                                value : "/root/.certs",
-                                required : true
-                        }
 		},
 		label : function() {
 			return this.name;
