@@ -76,7 +76,6 @@ module.exports = function(RED) {
 		});
 	}
 
-
 	RED.nodes.registerType("aws-iot-device", awsNodeBroker);
 
 	function awsMqttNodeIn(n) {
