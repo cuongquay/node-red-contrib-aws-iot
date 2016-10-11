@@ -91,7 +91,7 @@ module.exports = function(RED) {
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 		var self = this;
 		var options = {
-			qos: n.qos || 0
+			qos: parseInt(n.qos) || 0
 		};
 		if (self.awsIot) {
 			self.status({
@@ -149,7 +149,7 @@ module.exports = function(RED) {
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 		var self = this;
 		var options = {
-			qos: n.qos || 0
+			qos: parseInt(n.qos) || 0
 		};
 		self.on("input", function(msg) {
 			if (self.awsIot) {
