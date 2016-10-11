@@ -120,7 +120,8 @@ limitations under the License.
 				value : "",				
 			},
 			qos : {
-				value : "0"
+				value : 0,
+				validate : RED.validators.number()
 			}
 		},
 		inputs : 1,

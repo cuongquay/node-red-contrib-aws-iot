@@ -90,7 +90,9 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 		var self = this;
-		var options = {};
+		var options = {
+			qos: n.qos || 0
+		};
 		if (self.awsIot) {
 			self.status({
 				fill : "yellow",
@@ -146,7 +148,9 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 		var self = this;
-		var options = {};
+		var options = {
+			qos: n.qos || 0
+		};
 		self.on("input", function(msg) {
 			if (self.awsIot) {
 				self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
