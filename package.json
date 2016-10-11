@@ -24,7 +24,7 @@
     "email": "cuong3ihut@gmail.com"
   },
   "scripts": {
-    "preversion": "npm test",
-    "postversion": "git push && git push --tags"
+    "prepublish": "npm test",
+    "postpublish": "git push && git push --tags"
   }
 }
