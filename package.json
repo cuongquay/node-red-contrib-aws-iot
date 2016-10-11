@@ -25,6 +25,7 @@
   },
   "scripts": {
     "preversion": "npm test",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "prepublish": "npm version patch -m 'publish new version patch'"
   }
 }
