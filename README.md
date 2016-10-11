@@ -18,7 +18,7 @@ Usage
 	
 	Example: 
 ```
-	/root/.awscerts/|
+	/root/.awscerts/-
 					|--YourUniqueClientIdentifier-private.pem.key
 					|--YourUniqueClientIdentifier-certificate.pem.crt
 					|--root-CA.crt
