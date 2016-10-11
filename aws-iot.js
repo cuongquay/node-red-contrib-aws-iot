@@ -35,7 +35,8 @@ module.exports = function(RED) {
 						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
 						caPath : path.join(awsCerts, '/root-CA.crt'),
 						clientId : clientId,
-						region : n.region
+						region : n.region,
+						protocol: 'mqtts'
 					});
 				} else {
 					self.device = require('aws-iot-device-sdk').device({
@@ -43,7 +44,8 @@ module.exports = function(RED) {
 						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
 						caPath : path.join(awsCerts, '/root-CA.crt'),
 						clientId : clientId,
-						region : n.region
+						region : n.region,
+						protocol: 'mqtts'
 					});
 				}
 				if (self.device) {
@@ -112,8 +114,7 @@ module.exports = function(RED) {
 								if ( typeof payload === "string") {
 								} else {
 									payload = "" + payload;
-								}
-								payload = JSON.parse(payload);
+								}								
 								console.log("RECV<", topic, payload);
 								self.send({
 									topic : topic,
