@@ -24,7 +24,7 @@
     "email": "cuong3ihut@gmail.com"
   },
   "scripts": {
-    "prepublish": "mversion patch -mn 'Patch new version and publish'",
+    "prepare": "mversion patch -mn 'Patch new version and publish'",
     "postpublish": "git push && git push --tags"
   }
 }
