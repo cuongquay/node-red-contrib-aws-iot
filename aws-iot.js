@@ -16,29 +16,32 @@
 
 module.exports = function(RED) {
 	"use strict";
+	var path = require('path');
+
 	function awsNodeBroker(n) {
 		RED.nodes.createNode(this, n);
-		this.deviceName = n.name;
+		this.clientId = n.clientId;
 		var self = this;
 
 		this.connect = function(clientId, reconnect, callback) {
 			clientId = clientId || n.clientId;
+			clientId = clientId.trim();
 			var awsCerts = n.awscerts || ".";
 			if (!self.device || reconnect) {
 				self.log("Attempt to connect to " + n.mode + " with " + clientId + " from: " + awsCerts);
 				if (n.mode == "shadow") {
 					self.device = require('aws-iot-device-sdk').thingShadow({
-						keyPath : awsCerts + '/' + clientId + '-private.pem.key',
-						certPath : awsCerts + '/' + clientId + '-certificate.pem.crt',
-						caPath : awsCerts + '/root-CA.crt',
+						keyPath : path.join(awsCerts, '/' + clientId + '-private.pem.key'),
+						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
+						caPath : path.join(awsCerts, '/root-CA.crt'),
 						clientId : clientId,
 						region : n.region
 					});
 				} else {
 					self.device = require('aws-iot-device-sdk').device({
-						keyPath : awsCerts + '/' + clientId + '-private.pem.key',
-						certPath : awsCerts + '/' + clientId + '-certificate.pem.crt',
-						caPath : awsCerts + '/root-CA.crt',
+						keyPath : path.join(awsCerts, '/' + clientId + '-private.pem.key'),
+						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
+						caPath : path.join(awsCerts, '/root-CA.crt'),
 						clientId : clientId,
 						region : n.region
 					});
@@ -57,16 +60,17 @@ module.exports = function(RED) {
 						callback('offline');
 					});
 				}
+				callback('created');
 			} else if (self.device) {
 				callback('ready');
 			}
 		};
 
 		self.on('close', function() {
-			self.log("closed " + n.name + " ok");
+			self.log("closed " + self.clientId + " ok");
 			if (self.device) {
 				if (n.mode == "shadow") {
-					self.device.unregister(self.name);
+					self.device.unregister(self.clientId);
 					self.device.end();
 				} else {
 					self.device.end();
@@ -83,32 +87,59 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this, n);
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
-
 		var self = this;
-		self.on("input", function(msg) {
-			if (self.awsIot) {
-				self.awsIot.connect(msg.clientId, msg.reconnect, function(event) {
-					self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
-						if (event == "ready" || event == "connected") {
-							self.awsIot.device.subscribe(n.topic);
+		var options = {
+			qos : n.qos || 0,
+			retain : false
+		};
+		if (self.awsIot) {
+			self.status({
+				fill : "yellow",
+				shape : "ring",
+				text : "subscribing..."
+			});
+			self.awsIot.connect(null, null, function(event, error) {
+				if (event == "created") {
+					self.awsIot.device.unsubscribe(n.topic);
+					self.awsIot.device.subscribe(n.topic, options, function(error, granted) {
+						if (!error) {
+							self.status({
+								fill : "green",
+								shape : "ring",
+								text : "subscribed"
+							});
 							self.awsIot.device.on('message', function(topic, payload) {
 								if ( typeof payload === "string") {
-									payload = JSON.parse(payload);
+								} else {
+									payload = "" + payload;
 								}
-								self.log('onMessage: ' + topic + ", " + payload.toString());
+								payload = JSON.parse(payload);
+								console.log("RECV<", topic, payload);
 								self.send({
 									topic : topic,
 									payload : payload
 								});
 							});
+						} else {
+							self.status({
+								fill : "error",
+								shape : "ring",
+								text : error.message
+							});
 						}
 					});
-				});
-			} else {
-				self.error("aws-mqtt in is not configured");
-			}
-		});
+				}
+			});
+		} else {
+			self.error("aws-mqtt in is not configured");
+			self.status({
+				fill : "red",
+				shape : "ring",
+				text : "not configured"
+			});
+		}
 	}
+
 
 	RED.nodes.registerType("aws-mqtt in", awsMqttNodeIn);
 
@@ -116,7 +147,6 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this, n);
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
-
 		var self = this;
 		var options = {
 			qos : n.qos || 0,
@@ -125,7 +155,7 @@ module.exports = function(RED) {
 		self.on("input", function(msg) {
 			if (self.awsIot) {
 				self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
-					if (event == "ready" || event == "connected") {
+					if ((event == "ready" || event == "created")) {
 						if (!Buffer.isBuffer(msg.payload)) {
 							if ( typeof msg.payload === "object") {
 								msg.payload = JSON.stringify(msg.payload);
@@ -133,11 +163,36 @@ module.exports = function(RED) {
 								msg.payload = "" + msg.payload;
 							}
 						}
-						self.awsIot.device.publish(msg.topic || n.topic, msg.payload, options);
+						self.status({
+							fill : "blue",
+							shape : "ring",
+							text : "sending..."
+						});
+						console.log("SEND>", msg.topic || n.topic, msg.payload);
+						self.awsIot.device.publish(msg.topic || n.topic, msg.payload, options, function(error) {
+							if (error) {
+								self.status({
+									fill : "red",
+									shape : "ring",
+									text : error.message
+								});
+							} else {
+								self.status({
+									fill : "green",
+									shape : "ring",
+									text : "done"
+								});
+							}
+						});
 					}
 				});
 			} else {
 				self.error("aws-mqtt out is not configured");
+				self.status({
+					fill : "red",
+					shape : "ring",
+					text : "not configured"
+				});
 			}
 		});
 	}
@@ -154,15 +209,17 @@ module.exports = function(RED) {
 		self.on("input", function(msg) {
 			if (self.awsIot) {
 				self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
-					if (event == "ready" || event == "connected") {
-						self.awsIot.device.register(self.awsIot.name, {
+					if (event == "created") {
+						self.awsIot.device.unregister(self.awsIot.clientId);
+						self.awsIot.device.register(self.awsIot.clientId, {
 							ignoreDeltas : true,
 							persistentSubscribe : true
 						});
-						if (n.method == 'get')
-							self.clientToken = self.awsIot.device[n.method](self.awsIot.name);
-						else
-							self.clientToken = self.awsIot.device[n.method](self.awsIot.name, msg.payload);
+						if (n.method == 'get') {
+							self.clientToken = self.awsIot.device[n.method](self.awsIot.clientId);
+						} else {
+							self.clientToken = self.awsIot.device[n.method](self.awsIot.clientId, msg.payload);
+						}
 						self.awsIot.device.on('message', function(topic, payload) {
 							self.log('onMessage: ' + topic + ", " + payload.toString());
 							self.send({
@@ -212,6 +269,7 @@ module.exports = function(RED) {
 			}
 		});
 	}
+
 
 	RED.nodes.registerType("aws-thing", awsThingShadowNodeFunc);
 };
