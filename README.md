@@ -17,9 +17,9 @@ Usage
 + Install your AWS certificates into your local folder where node-red can reach your directory
 	
 	Example: /root/.awscerts/
-			* YourUniqueClientIdentifier-private.pem.key
-			* YourUniqueClientIdentifier-certificate.pem.crt
-			* root-CA.crt
+			+ YourUniqueClientIdentifier-private.pem.key
+			+ YourUniqueClientIdentifier-certificate.pem.crt
+			+ root-CA.crt
 			
 	YourUniqueClientIdentifier is the AWS thing name what you put when creating your thing.
 	
