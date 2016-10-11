@@ -76,6 +76,7 @@ module.exports = function(RED) {
 		});
 	}
 
+
 	RED.nodes.registerType("aws-iot-device", awsNodeBroker);
 
 	function awsMqttNodeIn(n) {
@@ -83,14 +84,14 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 
-		if (this.awsIot) {
-			var self = this;
-			self.on("input", function(msg) {
-				this.awsIot.connect(msg.clientId, msg.reconnect, function(event) {
-					this.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
+		var self = this;
+		self.on("input", function(msg) {
+			if (self.awsIot) {
+				self.awsIot.connect(msg.clientId, msg.reconnect, function(event) {
+					self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
 						if (event == "ready" || event == "connected") {
-							this.awsIot.device.subscribe(n.topic);
-							this.awsIot.device.on('message', function(topic, payload) {
+							self.awsIot.device.subscribe(n.topic);
+							self.awsIot.device.on('message', function(topic, payload) {
 								if ( typeof payload === "string") {
 									payload = JSON.parse(payload);
 								}
@@ -103,12 +104,11 @@ module.exports = function(RED) {
 						}
 					});
 				});
-			});
-		} else {
-			this.error("aws-mqtt in is not configured");
-		}
+			} else {
+				self.error("aws-mqtt in is not configured");
+			}
+		});
 	}
-
 
 	RED.nodes.registerType("aws-mqtt in", awsMqttNodeIn);
 
@@ -117,14 +117,14 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 
-		if (this.awsIot) {
-			var self = this;
-			var options = {
-				qos : n.qos || 0,
-				retain : false
-			};
-			self.on("input", function(msg) {
-				this.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
+		var self = this;
+		var options = {
+			qos : n.qos || 0,
+			retain : false
+		};
+		self.on("input", function(msg) {
+			if (self.awsIot) {
+				self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
 					if (event == "ready" || event == "connected") {
 						if (!Buffer.isBuffer(msg.payload)) {
 							if ( typeof msg.payload === "object") {
@@ -133,14 +133,15 @@ module.exports = function(RED) {
 								msg.payload = "" + msg.payload;
 							}
 						}
-						this.awsIot.device.publish(msg.topic || n.topic, msg.payload, options);
+						self.awsIot.device.publish(msg.topic || n.topic, msg.payload, options);
 					}
 				});
-			});
-		} else {
-			this.error("aws-mqtt out is not configured");
-		}
+			} else {
+				self.error("aws-mqtt out is not configured");
+			}
+		});
 	}
+
 
 	RED.nodes.registerType("aws-mqtt out", awsMqttNodeOut);
 
@@ -149,20 +150,20 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 
-		if (this.awsIot) {
-			var self = this;
-			self.on("input", function(msg) {
-				this.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
+		var self = this;
+		self.on("input", function(msg) {
+			if (self.awsIot) {
+				self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
 					if (event == "ready" || event == "connected") {
-						this.awsIot.device.register(this.awsIot.name, {
+						self.awsIot.device.register(self.awsIot.name, {
 							ignoreDeltas : true,
 							persistentSubscribe : true
 						});
 						if (n.method == 'get')
-							self.clientToken = this.awsIot.device[n.method](this.awsIot.name);
+							self.clientToken = self.awsIot.device[n.method](self.awsIot.name);
 						else
-							self.clientToken = this.awsIot.device[n.method](this.awsIot.name, msg.payload);
-						this.awsIot.device.on('message', function(topic, payload) {
+							self.clientToken = self.awsIot.device[n.method](self.awsIot.name, msg.payload);
+						self.awsIot.device.on('message', function(topic, payload) {
 							self.log('onMessage: ' + topic + ", " + payload.toString());
 							self.send({
 								type : 'message',
@@ -170,7 +171,7 @@ module.exports = function(RED) {
 								payload : JSON.parse(payload.toString())
 							});
 						});
-						this.awsIot.device.on('delta', function(thingName, stateObject) {
+						self.awsIot.device.on('delta', function(thingName, stateObject) {
 							self.log('onDelta ' + thingName + ': ' + JSON.stringify(stateObject));
 							self.send({
 								type : 'delta',
@@ -178,7 +179,7 @@ module.exports = function(RED) {
 								payload : stateObject
 							});
 						});
-						this.awsIot.device.on('status', function(thingName, status, clientToken, stateObject) {
+						self.awsIot.device.on('status', function(thingName, status, clientToken, stateObject) {
 							if (self.clientToken == clientToken) {
 								self.log('onStatus: ' + thingName + ", clientToken: " + self.clientToken);
 								self.send({
@@ -192,7 +193,7 @@ module.exports = function(RED) {
 								});
 							}
 						});
-						this.awsIot.device.on('timeout', function(thingName, clientToken) {
+						self.awsIot.device.on('timeout', function(thingName, clientToken) {
 							if (self.clientToken == clientToken) {
 								self.send({
 									type : 'timeout',
@@ -205,12 +206,12 @@ module.exports = function(RED) {
 						});
 					}
 				});
-			});
-		} else {
-			this.error("aws-thing shadow is not configured");
-		}
+
+			} else {
+				self.error("aws-thing shadow is not configured");
+			}
+		});
 	}
 
-
 	RED.nodes.registerType("aws-thing", awsThingShadowNodeFunc);
-}; 
+};
