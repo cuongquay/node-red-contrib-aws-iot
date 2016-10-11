@@ -90,10 +90,7 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 		var self = this;
-		var options = {
-			qos : n.qos || 0,
-			retain : false
-		};
+		var options = {};
 		if (self.awsIot) {
 			self.status({
 				fill : "yellow",
@@ -113,7 +110,7 @@ module.exports = function(RED) {
 							self.awsIot.device.on('message', function(topic, payload) {
 								if ( typeof payload === "string") {
 								} else {
-									payload = "" + payload;
+									payload = payload.toString();
 								}								
 								console.log("RECV<", topic, payload);
 								self.send({
@@ -149,10 +146,7 @@ module.exports = function(RED) {
 		this.myDevice = n.device;
 		this.awsIot = RED.nodes.getNode(this.myDevice);
 		var self = this;
-		var options = {
-			qos : n.qos || 0,
-			retain : false
-		};
+		var options = {};
 		self.on("input", function(msg) {
 			if (self.awsIot) {
 				self.awsIot.connect(msg.clientId, msg.reconnect, function(event, error) {
@@ -161,8 +155,9 @@ module.exports = function(RED) {
 							if ( typeof msg.payload === "object") {
 								msg.payload = JSON.stringify(msg.payload);
 							} else if ( typeof msg.payload !== "string") {
-								msg.payload = "" + msg.payload;
+								msg.payload = msg.payload.toString();
 							}
+							msg.payload = new Buffer(msg.payload, "utf-8");
 						}
 						self.status({
 							fill : "blue",
