@@ -17,22 +17,23 @@ Usage
 + Install your AWS certificates into your local folder where node-red can reach your directory
 	
 	Example: /root/.awscerts/
-			* <YourUniqueClientIdentifier>-private.pem.key
-			* <YourUniqueClientIdentifier>-certificate.pem.crt
+			* YourUniqueClientIdentifier-private.pem.key
+			* YourUniqueClientIdentifier-certificate.pem.crt
 			* root-CA.crt
 			
-	<YourUniqueClientIdentifier> is the AWS thing name what you put when creating your thing.
+	YourUniqueClientIdentifier is the AWS thing name what you put when creating your thing.
 	
 + Setup the **node-red-contrib-aws-iot-hub** node with *AWS Certs* path pointed to /root/.awscerts/
-	Ex: awsCerts = /root/.awscerts/
+	
+	Example: awsCerts = /root/.awscerts/
 	
 + The final configuration will be used in the **node-red-contrib-aws-iot-hub** code look likes:
 
 ```
-	keyPath : '/root/.awscerts/' + <YourUniqueClientIdentifier> + '-private.pem.key',
-	certPath : '/root/.awscerts/' + <YourUniqueClientIdentifier> + '-certificate.pem.crt',
+	keyPath : '/root/.awscerts/YourUniqueClientIdentifier-private.pem.key',
+	certPath : '/root/.awscerts/YourUniqueClientIdentifier-certificate.pem.crt',
 	caPath : '/root/.awscerts/root-CA.crt',
-	clientId : <YourUniqueClientIdentifier>,
+	clientId : YourUniqueClientIdentifier,
 	region : us-east-1
 ```
 
