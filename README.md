@@ -27,8 +27,11 @@ Usage
 	
 + Setup the **node-red-contrib-aws-iot-hub** node with *AWS Certs* path pointed to /root/.awscerts/
 	
-	Example: awsCerts = /root/.awscerts/
-	
+	Example: 
+```
+	awsCerts = /root/.awscerts/
+```
+
 + The final configuration will be used in the **node-red-contrib-aws-iot-hub** code look likes:
 
 ```
