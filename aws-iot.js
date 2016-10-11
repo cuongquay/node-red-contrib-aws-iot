@@ -25,7 +25,7 @@ module.exports = function(RED) {
 			clientId = clientId || n.clientId;
 			var awsCerts = n.awscerts || ".";
 			if (!self.device || reconnect) {
-				self.log("Attemp to connect to " + n.mode + " with " + clientId);
+				self.log("Attempt to connect to " + n.mode + " with " + clientId);
 				if (n.mode == "shadow") {
 					self.device = require('aws-iot-device-sdk').thingShadow({
 						keyPath : awsCerts + '/' + clientId + '-private.pem.key',
