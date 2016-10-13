@@ -78,7 +78,7 @@ module.exports = function(RED) {
 					self.device.end();
 				}
 			}
-
+			self.device = null;
 		});
 	}
 
