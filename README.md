@@ -8,7 +8,7 @@ Install
 
 Run the following command in the root directory of your Node-RED install
 
-    npm install node-red-contrib-aws-iot
+    npm install node-red-contrib-aws-iot-hub
 
 
 Usage
@@ -25,14 +25,14 @@ Usage
 ```
 	YourUniqueClientIdentifier is the AWS thing name what you put when creating your thing.
 	
-+ Setup the **node-red-contrib-aws-iot** node with *AWS Certs* path pointed to /root/.awscerts/
++ Setup the **node-red-contrib-aws-iot-hub** node with *AWS Certs* path pointed to /root/.awscerts/
 	
 	Example: 
 ```
 	awsCerts = /root/.awscerts/
 ```
 
-+ The final configuration will be used in the **node-red-contrib-aws-iot** code look likes:
++ The final configuration will be used in the **node-red-contrib-aws-iot-hub** code look likes:
 
 ```
 	keyPath : '/root/.awscerts/YourUniqueClientIdentifier-private.pem.key',
