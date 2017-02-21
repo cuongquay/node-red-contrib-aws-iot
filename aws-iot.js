@@ -31,8 +31,8 @@ module.exports = function(RED) {
 				self.log("Attempt to connect to " + n.mode + " with " + clientId + " from: " + awsCerts);
 				if (n.mode == "shadow") {
 					self.device = require('aws-iot-device-sdk').thingShadow({
-						keyPath : path.join(awsCerts, '/' + clientId + '-private.pem.key'),
-						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
+						keyPath : path.join(awsCerts, '/' + clientId + '.private.key'),
+						certPath : path.join(awsCerts, '/' + clientId + '.cert.pem'),
 						caPath : path.join(awsCerts, '/root-CA.crt'),
 						clientId : clientId,
 						region : n.region,
@@ -40,8 +40,8 @@ module.exports = function(RED) {
 					});
 				} else {
 					self.device = require('aws-iot-device-sdk').device({
-						keyPath : path.join(awsCerts, '/' + clientId + '-private.pem.key'),
-						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
+						keyPath : path.join(awsCerts, '/' + clientId + '.private.key'),
+						certPath : path.join(awsCerts, '/' + clientId + '.cert.pem'),
 						caPath : path.join(awsCerts, '/root-CA.crt'),
 						clientId : clientId,
 						region : n.region,
