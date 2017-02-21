@@ -19,8 +19,8 @@ Usage
 	Example: 
 ```
 	/root/.awscerts/-
-					|--YourUniqueClientIdentifier-private.pem.key
-					|--YourUniqueClientIdentifier-certificate.pem.crt
+					|--YourUniqueClientIdentifier-private.key
+					|--YourUniqueClientIdentifier-cert.pem
 					|--root-CA.crt
 ```
 	YourUniqueClientIdentifier is the AWS thing name what you put when creating your thing.
@@ -35,8 +35,8 @@ Usage
 + The final configuration will be used in the **node-red-contrib-aws-iot-hub** code look likes:
 
 ```
-	keyPath : '/root/.awscerts/YourUniqueClientIdentifier-private.pem.key',
-	certPath : '/root/.awscerts/YourUniqueClientIdentifier-certificate.pem.crt',
+	keyPath : '/root/.awscerts/YourUniqueClientIdentifier-private.key',
+	certPath : '/root/.awscerts/YourUniqueClientIdentifier-cert.pem',
 	caPath : '/root/.awscerts/root-CA.crt',
 	clientId : YourUniqueClientIdentifier,
 	region : us-east-1
