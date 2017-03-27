@@ -1,0 +1,4 @@
+#!/bin/sh
+TAG=${1:-1.0.0}
+git tag -d ${TAG}
+git push origin :refs/tags/${TAG}
