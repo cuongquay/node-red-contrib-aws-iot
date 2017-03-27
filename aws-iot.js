@@ -29,8 +29,8 @@ module.exports = function(RED) {
 			var awsCerts = n.awscerts || ".";
 			if (!self.device || reconnect) {
 				self.log("Attempt to connect to " + n.mode + " with " + clientId + " from: " + awsCerts);
-				var keyPath = path.join(awsCerts, '/' + clientId + '-private.pem.key');
-				var certPath = path.join(awsCerts, '/' + clientId + '-certificate.pem.crt');
+				var keyPath = path.join(awsCerts, '/' + clientId + '.private.key');
+				var certPath = path.join(awsCerts, '/' + clientId + '.cert.pem');
 				var caPath = path.join(awsCerts, '/root-CA.crt');
 				self.log("Make sure your certificates are presented as follows:");
 				self.log("PrivateKey:" + keyPath);
