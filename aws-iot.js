@@ -32,10 +32,10 @@ module.exports = function(RED) {
 				var keyPath = path.join(awsCerts, '/' + clientId + '.private.key');
 				var certPath = path.join(awsCerts, '/' + clientId + '.cert.pem');
 				var caPath = path.join(awsCerts, '/root-CA.crt');
-				self.log("Make sure your certificates are presented as follows:");
-				self.log("PrivateKey:" + keyPath);
-				self.log("PublichKey:" + certPath);
-				self.log("RootCA:" + caPath);
+				self.log("Using the certificates that are presented as follows:");
+				self.log(" - keyPath   : " + keyPath);
+				self.log(" - certPath  : " + certPath);
+				self.log(" - caPath    : " + caPath);
 				if (n.mode == "shadow") {
 					self.device = require('aws-iot-device-sdk').thingShadow({
 						keyPath : keyPath,
