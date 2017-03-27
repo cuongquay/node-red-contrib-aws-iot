@@ -29,20 +29,27 @@ module.exports = function(RED) {
 			var awsCerts = n.awscerts || ".";
 			if (!self.device || reconnect) {
 				self.log("Attempt to connect to " + n.mode + " with " + clientId + " from: " + awsCerts);
+				var keyPath = path.join(awsCerts, '/' + clientId + '-private.pem.key');
+				var certPath = path.join(awsCerts, '/' + clientId + '-certificate.pem.crt');
+				var caPath = path.join(awsCerts, '/root-CA.crt');
+				self.log("Make sure your certificates are presented as follows:");
+				self.log("PrivateKey:" + keyPath);
+				self.log("PublichKey:" + certPath);
+				self.log("RootCA:" + caPath);
 				if (n.mode == "shadow") {
 					self.device = require('aws-iot-device-sdk').thingShadow({
-						keyPath : path.join(awsCerts, '/' + clientId + '-private.pem.key'),
-						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
-						caPath : path.join(awsCerts, '/root-CA.crt'),
+						keyPath : keyPath,
+						certPath : certPath,
+						caPath : caPath,
 						clientId : clientId,
 						region : n.region,
 						protocol: 'mqtts'
 					});
 				} else {
 					self.device = require('aws-iot-device-sdk').device({
-						keyPath : path.join(awsCerts, '/' + clientId + '-private.pem.key'),
-						certPath : path.join(awsCerts, '/' + clientId + '-certificate.pem.crt'),
-						caPath : path.join(awsCerts, '/root-CA.crt'),
+						keyPath : keyPath,
+						certPath : certPath,
+						caPath : caPath,
 						clientId : clientId,
 						region : n.region,
 						protocol: 'mqtts'
