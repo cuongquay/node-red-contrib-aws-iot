@@ -19,13 +19,13 @@ Usage
 	Example: 
 ```
 	/root/.agent/certs/-
-					|--YourUniqueClientIdentifier.private.key
-					|--YourUniqueClientIdentifier.cert.pem
+					|--YourThingName.private.key
+					|--YourThingName.cert.pem
 					|--root-CA.crt
 ```
-	YourUniqueClientIdentifier is the AWS thing name what you put when creating your thing.
+	YourThingName is the AWS Thing name what is the value you keyin when creating your thing/device.
 	
-+ Setup the **node-red-contrib-aws-iot-hub** node with *AWS Certs* path pointed to /root/.awscerts/
++ Setup the **node-red-contrib-aws-iot-hub** node with *AWS Certs* path pointed to /root/.agent/certs/
 	
 	Example: 
 ```
@@ -35,10 +35,10 @@ Usage
 + The final configuration will be used in the **node-red-contrib-aws-iot-hub** code look likes:
 
 ```
-	keyPath : '/root/.agent/certs/YourUniqueClientIdentifier.private.key',
-	certPath : '/root/.agent/certs/YourUniqueClientIdentifier.cert.pem',
+	keyPath : '/root/.agent/certs/YourThingName.private.key',
+	certPath : '/root/.agent/certs/YourThingName.cert.pem',
 	caPath : '/root/.agent/certs/root-CA.crt',
-	clientId : YourUniqueClientIdentifier,
+	clientId : YourThingName,
 	region : us-east-1
 ```
 
