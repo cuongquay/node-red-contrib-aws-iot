@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-aws-iot-hub",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "An aws-iot-hub node for Node-RED",
   "dependencies": {
     "aws-iot-device-sdk": ">=1.0.12"
