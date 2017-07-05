@@ -21,6 +21,7 @@ module.exports = function(RED) {
 	function awsNodeBroker(n) {
 		RED.nodes.createNode(this, n);
 		this.clientId = n.clientId;
+		this.endpoint = n.endpoint;
 		var self = this;
 
 		this.connect = function(clientId, reconnect, callback) {
@@ -42,7 +43,7 @@ module.exports = function(RED) {
 						certPath : certPath,
 						caPath : caPath,
 						clientId : clientId,
-						region : n.region,
+						host : self.endpoint,
 						protocol: 'mqtts'
 					});
 				} else {
@@ -51,7 +52,7 @@ module.exports = function(RED) {
 						certPath : certPath,
 						caPath : caPath,
 						clientId : clientId,
-						region : n.region,
+						host : self.endpoint,
 						protocol: 'mqtts'
 					});
 				}
