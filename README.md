@@ -39,7 +39,7 @@ Usage
 	certPath : '/root/.agent/certs/YourThingName.cert.pem',
 	caPath : '/root/.agent/certs/root-CA.crt',
 	clientId : YourThingName,
-	region : us-east-1
+	host : <YourAWSIoTCustomEndpoint>
 ```
 
 See more at https://github.com/aws/aws-iot-device-sdk-js/blob/master/README.md#certificate-configuration 
