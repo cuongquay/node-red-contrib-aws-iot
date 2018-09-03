@@ -122,7 +122,7 @@ module.exports = function(RED) {
 								} else {
 									payload = payload.toString();
 								}								
-								console.log("RECV<", topic, payload);
+								self.log("RECV< " + topic + payload);
 								self.send({
 									topic : topic,
 									payload : payload
@@ -176,7 +176,7 @@ module.exports = function(RED) {
 							shape : "ring",
 							text : "sending..."
 						});
-						console.log("SEND>", msg.topic || n.topic, msg.payload);
+						self.log("SEND> " + msg.topic || n.topic + " " +msg.payload);
 						self.awsIot.device.publish(msg.topic || n.topic, msg.payload, options, function(error) {
 							if (error) {
 								self.status({
